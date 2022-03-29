@@ -2,7 +2,7 @@
 
 This tutorial will walk you through the process of making a Jumper agent from scratch.
 
-![Jumper Intro](/images/Jumper_intro.png)
+![Jumper Intro](/images/Jumper_intro.PNG)
 
 We will teach the agent to jump over the obstacles and catch coins.
 
