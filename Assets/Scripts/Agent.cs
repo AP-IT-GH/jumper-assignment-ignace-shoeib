@@ -14,10 +14,12 @@ public class Agent : Unity.MLAgents.Agent
     {
         activeObstacle = Instantiate(Obstacle);
         activeObstacle.transform.SetParent(transform.parent);
-        activeObstacle.transform.localPosition = new Vector3(-15, 0.5f, 0);
+        activeObstacle.transform.localPosition = new Vector3(-20, 0.5f, 0);
         activeObstacle.GetComponent<Obstacle>().speed = Random.Range(5f, 10f);
 
-        activeBonus = Instantiate(Bonus, new Vector3(-10,4.3f,0), new Quaternion());
+        activeBonus = Instantiate(Bonus);
+        activeBonus.transform.SetParent(transform.parent);
+        activeBonus.transform.localPosition = new Vector3(-10, 4.3f, 0);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -27,9 +29,9 @@ public class Agent : Unity.MLAgents.Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        if (activeBonus == null)
+        if (activeBonus == null & GetCumulativeReward()==0f)
         {
-            AddReward(0.5f);
+            SetReward(0.5f);
 
         }
         if (activeObstacle == null)
