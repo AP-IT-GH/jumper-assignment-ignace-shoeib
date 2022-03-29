@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
@@ -9,14 +6,16 @@ public class Agent : Unity.MLAgents.Agent
 {
     Rigidbody rBody;
     private bool isGrounded = true;
+    public GameObject Obstacle;
     public override void OnEpisodeBegin()
     {
-
+        transform.localPosition = new Vector3(0, 0.5f, 0);
+        Instantiate(Obstacle);
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-
+        sensor.AddObservation(transform.localPosition);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -49,6 +48,13 @@ public class Agent : Unity.MLAgents.Agent
         if (other.gameObject.layer == 3)
         {
             isGrounded = false;
+        }
+    }
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer != 3)
+        {
+            EndEpisode();
         }
     }
 
