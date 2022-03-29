@@ -29,12 +29,12 @@ public class Agent : Unity.MLAgents.Agent
     {
         if (activeBonus == null)
         {
-            SetReward(1f);
+            AddReward(0.5f);
 
         }
         if (activeObstacle == null)
         {
-            SetReward(1f);
+            AddReward(0.5f);
             EndEpisode();
         }
         if(isGrounded)
@@ -46,7 +46,6 @@ public class Agent : Unity.MLAgents.Agent
         var discreteActionsout = actionsOut.DiscreteActions;
         if (Input.GetKey(KeyCode.Space) == true)
             discreteActionsout[0] = 1;
-        
     }
     void Start()
     {
