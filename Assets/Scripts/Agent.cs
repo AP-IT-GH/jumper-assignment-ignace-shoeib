@@ -10,7 +10,7 @@ public class Agent : Unity.MLAgents.Agent
     public override void OnEpisodeBegin()
     {
         transform.localPosition = new Vector3(0, 0.5f, 0);
-        Instantiate(Obstacle);
+        Instantiate(Obstacle, new Vector3(-15, 0.5f, 0), new Quaternion());
     }
 
     public override void CollectObservations(VectorSensor sensor)
