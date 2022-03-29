@@ -7,10 +7,11 @@ public class Agent : Unity.MLAgents.Agent
     Rigidbody rBody;
     private bool isGrounded = true;
     public GameObject Obstacle;
+    private GameObject activeObstacle;
     public override void OnEpisodeBegin()
     {
-        transform.localPosition = new Vector3(0, 0.5f, 0);
-        Instantiate(Obstacle, new Vector3(-15, 0.5f, 0), new Quaternion());
+        activeObstacle = Instantiate(Obstacle, new Vector3(-15, 0.5f, 0), new Quaternion());
+        activeObstacle.GetComponent<Obstacle>().speed = Random.Range(5f, 10f);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -20,6 +21,11 @@ public class Agent : Unity.MLAgents.Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        if (activeObstacle == null)
+        {
+            SetReward(1f);
+            EndEpisode();
+        }
         rBody.AddForce(0, actionBuffers.DiscreteActions[0] * 100, 0);
     }
 
@@ -54,13 +60,8 @@ public class Agent : Unity.MLAgents.Agent
     {
         if (collision.gameObject.layer != 3)
         {
+            Destroy(activeObstacle);
             EndEpisode();
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
