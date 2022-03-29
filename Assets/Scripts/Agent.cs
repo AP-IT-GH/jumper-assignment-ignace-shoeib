@@ -20,7 +20,7 @@ public class Agent : Unity.MLAgents.Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        rBody.AddForce(actionBuffers.ContinuousActions[0] * 10, 0, actionBuffers.ContinuousActions[1] * 10);
+        rBody.AddForce(0, actionBuffers.DiscreteActions[0] * 100, 0);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
