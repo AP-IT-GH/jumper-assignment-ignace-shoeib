@@ -20,6 +20,7 @@ public class Agent : Unity.MLAgents.Agent
         activeBonus = Instantiate(Bonus);
         activeBonus.transform.SetParent(transform.parent);
         activeBonus.transform.localPosition = new Vector3(-10, 4.3f, 0);
+        activeBonus.GetComponent<Bonus>().speed = Random.Range(5f, 10f);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -31,12 +32,12 @@ public class Agent : Unity.MLAgents.Agent
     {
         if (activeBonus == null & GetCumulativeReward()==0f)
         {
-            SetReward(0.5f);
+            SetReward(0.2f);
 
         }
         if (activeObstacle == null)
         {
-            AddReward(0.5f);
+            AddReward(0.8f);
             EndEpisode();
         }
         if(isGrounded)
