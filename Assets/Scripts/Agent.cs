@@ -8,10 +8,14 @@ public class Agent : Unity.MLAgents.Agent
     private bool isGrounded = true;
     public GameObject Obstacle;
     private GameObject activeObstacle;
+    public GameObject Bonus;
+    private GameObject activeBonus;
     public override void OnEpisodeBegin()
     {
         activeObstacle = Instantiate(Obstacle, new Vector3(-15, 0.5f, 0), new Quaternion());
         activeObstacle.GetComponent<Obstacle>().speed = Random.Range(5f, 10f);
+
+        activeBonus = Instantiate(Bonus, new Vector3(-10,4.3f,0), new Quaternion());
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -21,11 +25,18 @@ public class Agent : Unity.MLAgents.Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        if (activeBonus == null)
+        {
+            SetReward(1f);
+
+        }
         if (activeObstacle == null)
         {
             SetReward(1f);
             EndEpisode();
         }
+
+        
         rBody.AddForce(0, actionBuffers.DiscreteActions[0] * 100, 0);
     }
 
@@ -58,9 +69,15 @@ public class Agent : Unity.MLAgents.Agent
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer != 3)
+        if (collision.gameObject.CompareTag("Bonus"))
+        {
+            Destroy(activeBonus);
+        }
+        
+        if (collision.gameObject.CompareTag("Obstacle"))
         {
             Destroy(activeObstacle);
+            Destroy(activeBonus);
             EndEpisode();
         }
     }
