@@ -16,9 +16,9 @@ public class Obstacle : MonoBehaviour
         this.transform.Translate(Vector3.right * speed * Time.deltaTime);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision other)
     {
-        if (collision.gameObject.CompareTag("Wall") == true)
+        if (other.gameObject.CompareTag("Wall") == true)
         {
             Destroy(this.gameObject);
         }
