@@ -10,7 +10,9 @@ public class Agent : Unity.MLAgents.Agent
     private GameObject activeObstacle;
     public override void OnEpisodeBegin()
     {
-        activeObstacle = Instantiate(Obstacle, new Vector3(-15, 0.5f, 0), new Quaternion());
+        activeObstacle = Instantiate(Obstacle);
+        activeObstacle.transform.SetParent(transform.parent);
+        activeObstacle.transform.localPosition = new Vector3(-15, 0.5f, 0);
         activeObstacle.GetComponent<Obstacle>().speed = Random.Range(5f, 10f);
     }
 
@@ -21,22 +23,22 @@ public class Agent : Unity.MLAgents.Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+
         if (activeObstacle == null)
         {
             SetReward(1f);
             EndEpisode();
         }
-        rBody.AddForce(0, actionBuffers.DiscreteActions[0] * 100, 0);
+        if(isGrounded)
+            rBody.AddForce(0, actionBuffers.DiscreteActions[0] * 150, 0);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        if (isGrounded)
-        {
-            var discreteActionsout = actionsOut.DiscreteActions;
-            if (Input.GetKey(KeyCode.Space) == true)
-                discreteActionsout[0] = 1;
-        }
+        var discreteActionsout = actionsOut.DiscreteActions;
+        if (Input.GetKey(KeyCode.Space) == true)
+            discreteActionsout[0] = 1;
+        
     }
     void Start()
     {
