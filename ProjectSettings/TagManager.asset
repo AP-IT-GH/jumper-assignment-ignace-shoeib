@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Wall
+  - Bonus
+  - Obstacle
+  - Agent
   layers:
   - Default
   - TransparentFX
