@@ -1,47 +1,25 @@
 using UnityEngine;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Sensors;
 
 public class Agent : Unity.MLAgents.Agent
 {
     Rigidbody rBody;
-    private bool isGrounded = true;
-    public GameObject Obstacle;
-    private GameObject activeObstacle;
-    public GameObject Bonus;
-    private GameObject activeBonus;
+    public bool isGrounded = true;
     public override void OnEpisodeBegin()
     {
-        activeObstacle = Instantiate(Obstacle);
-        activeObstacle.transform.SetParent(transform.parent);
-        activeObstacle.transform.localPosition = new Vector3(-20, 0.5f, 0);
-        activeObstacle.GetComponent<Obstacle>().speed = Random.Range(5f, 10f);
-
-        activeBonus = Instantiate(Bonus);
-        activeBonus.transform.SetParent(transform.parent);
-        activeBonus.transform.localPosition = new Vector3(-10, 4.3f, 0);
-        activeBonus.GetComponent<Bonus>().speed = Random.Range(5f, 10f);
-    }
-
-    public override void CollectObservations(VectorSensor sensor)
-    {
-        sensor.AddObservation(transform.localPosition);
+        isGrounded = true;
+        transform.localPosition = new Vector3(0, 0.5f, 0);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        if (activeBonus == null & GetCumulativeReward()==0f)
+        AddReward(0.001f);
+        if (isGrounded && actionBuffers.DiscreteActions[0] == 1)
         {
-            SetReward(0.2f);
-
+            isGrounded = false;
+            rBody.velocity = new Vector3(0, 10, 0);
+            AddReward(-0.030f);
         }
-        if (activeObstacle == null)
-        {
-            AddReward(0.8f);
-            EndEpisode();
-        }
-        if(isGrounded)
-            rBody.AddForce(0, actionBuffers.DiscreteActions[0] * 150, 0);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -60,25 +38,18 @@ public class Agent : Unity.MLAgents.Agent
         {
             isGrounded = true;
         }
-    }
-    void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.layer == 3)
+        if (other.gameObject.CompareTag("Bonus"))
         {
-            isGrounded = false;
+            AddReward(0.1f);
+            Destroy(other.gameObject);
         }
     }
-    void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision other)
     {
-        if (collision.gameObject.CompareTag("Bonus"))
+        if (other.gameObject.CompareTag("Obstacle"))
         {
-            Destroy(activeBonus);
-        }
-        
-        if (collision.gameObject.CompareTag("Obstacle"))
-        {
-            Destroy(activeObstacle);
-            Destroy(activeBonus);
+            AddReward(-10.0f);
+            Destroy(other.gameObject);
             EndEpisode();
         }
     }
