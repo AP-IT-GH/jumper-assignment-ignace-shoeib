@@ -440,7 +440,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 50000
+  MaxStep: 0
   isGrounded: 1
 --- !u!114 &7771906029563568284
 MonoBehaviour:
