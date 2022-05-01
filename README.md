@@ -6,12 +6,15 @@ This tutorial will walk you through the process of making a Jumper agent from sc
 
 The object of this tutorial is to teach the agent to jump over the obstacles and catch coins.
 
-## Overview ++
+## Overview
 
 In this tutorial we will:
 
 1. Create an environment for the agent. This will contain all the objects as well all the physical simulations.
-2. Implement the Agent, that will carry out actions and observe its environment. So it can calculate
+2. Implement the Agent subclasses. This will contain the logic for the agent. The agent will be able to learn and act.
+3. Add the Agent subclasses to appropriate GameObjects.
+
+If you are unfamiliar with Unity and ML-Agent you should get yourself familiarized with it before starting this tutorial.
 
 ## Set Up The Unity Project
 
@@ -96,11 +99,11 @@ By creating a training area it wil simplify some steps in the future.
 
 It should look like this:
 
-![TrainingArea](/images/TrainingArea.png)
+![TrainingArea](/images/TrainingArea.PNG)
 
 ## Scripts
 
-### Agent Scripts
+### Agent Script
 
 To create the Agent script:
 
@@ -318,7 +321,7 @@ private void OnTriggerEnter(Collider other)
 }
 ```
 
-### Spawner Scripts
+### Spawner Script
 
 To create the Spawner script:
 
@@ -376,4 +379,48 @@ All the scripts should be done.
 
 ## Final Agent Setup
 
-Now that all the Gameobjects and Ml-Agent components are done
+Now that all the Gameobjects and Ml-Agent components are done we need to edit some properties of the Agent object.
+
+1. Select the Agent Object and show its properties in the inspector window.
+2. Add a Rigidbody component to the Agent object if it not already added.
+3. Add a Behavoir component, name it Jumper.
+4. Add a Decision Requester component and set the decision period to 5.
+5. Add a Demonstration Recorder component to the Agent object.
+
+The Agent object should look like this:
+
+![Agent2](/images/Agent2.PNG)
+
+Finaly we will be adding the ray perception component to the Agent object.
+
+First we will add the ray component as a child object to the Agent object.
+
+1. Right click on the Agent object in the hirachy and click "Create empty".
+2. Name the object as "Rays".
+
+Now add the RayPerception Sensor 3D component to the Rays object and set the parameters.
+
+![Rays](/images/Rays.PNG)
+
+Finaly add the RayPerception Sensor 3D component to the Agent object and set the parameters.
+
+![RayAgent](/images/RayAgent.PNG)
+
+## Testing the Environment
+
+Before training it is always good to first test your environment by controlling the Agent using the keyboard. To be able to do this we will need to add a method called `Heuristic()` to the Agent script.
+The method should look like this:
+
+```
+public override void Heuristic(in ActionBuffers actionsOut)
+{
+    var discreteActionsout = actionsOut.DiscreteActions;
+    if (Input.GetKey(KeyCode.Space) == true)
+        discreteActionsout[0] = 1;
+}
+```
+
+In order for the Agent to use the Heuristic, we will need to set the Behavior Type to "Heuristic Only".
+Now you van press run and move the Agent using the arrow keys.
+
+## Training the Environment
