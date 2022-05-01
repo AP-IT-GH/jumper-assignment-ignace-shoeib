@@ -1,10 +1,10 @@
-# Making a Jumper agent
+# Jumper Agent Tutorial
 
 This tutorial will walk you through the process of making a Jumper agent from scratch.
 
 ![Jumper Intro](/images/Jumper_intro.PNG)
 
-The object of this tutorial is to teach the agent to jump over the obstacles and catch coins.
+The object of this tutorial is to teach the Agent to jump over the obstacles and catch coins.
 
 ## Overview
 
@@ -21,7 +21,7 @@ If you are unfamiliar with Unity and ML-Agent you should get yourself familiariz
 First you will have to create a Unity project in the Unity Hub and than add ML-Agent assets to the project.
 
 1. Launch Unity Hub, create a 3D project and name it however you want.
-2. Add ML-Agent package in the projects packet manager. Make sure it's the latest version.
+2. Add ML-Agent package in the projects packet manager. Make sure its the latest version.
 
 It should look like this:
 
@@ -30,7 +30,7 @@ It should look like this:
 
 ## Create Environment
 
-Now we will create the scene. It will include a Plane that will act as our floor, a small cube which will be our agent, a long cube which will be our obstacle, an another small cube which will act as a bonus reward and a wall that will destroy the obstacle and bonus when they collide.
+Now we will create the scene. It will include a Plane that will act as our floor, a small Cube which will be our Agent, a long Cube which will be our obstacle, an another small Cube which will act as a bonus reward and a Wall that will destroy the obstacle and bonus when they collide.
 
 ### Create the Floor plane
 
@@ -115,7 +115,7 @@ To create the Agent script:
 
 Now we will edit the Agent script:
 
-1. Double click the agent script to open it.
+1. Double click the Agent script to open it.
 2. Import the needed ML-agent package by adding these:
 
 ```
@@ -173,7 +173,9 @@ For the final part we have to implement 3 methods. Which will all receive action
 
 ##### OnActionReceived(ActionBuffers actionBuffers)
 
-The OnActionReceived() method should look like this:
+In this method we will receive the actions from the Agent and apply them to the Agent. Every action gets a small reward, so how longer it survives the more reward it will receive. But if he jumps he will get a negative reward. So that he wont jump forever.
+
+The `OnActionReceived()` method should look like this:
 
 ```
 public override void OnActionReceived(ActionBuffers actionBuffers)
@@ -191,10 +193,23 @@ public override void OnActionReceived(ActionBuffers actionBuffers)
 
 ##### OnTriggerEnter(Collider other)
 
-// This method will be called when the Agent collides with ther object.
+This method will be called when the Agent collides with an object. If the object has the tag "Bonus" it will receive an reward.
+
+The `OnTriggerEnter()` method should look like this:
 
 ```
-
+void OnTriggerEnter(Collider other)
+{
+    if (other.gameObject.layer == 3)
+    {
+        isGrounded = true;
+    }
+    if (other.gameObject.CompareTag("Bonus"))
+    {
+        AddReward(0.1f);
+        Destroy(other.gameObject);
+    }
+}
 ```
 
 ##### OnCollisionEnter(Collision other)
@@ -424,3 +439,42 @@ In order for the Agent to use the Heuristic, we will need to set the Behavior Ty
 Now you van press run and move the Agent using the arrow keys.
 
 ## Training the Environment
+
+The training properties are defined in a configuration file. Which we will call "Jumper_config.yaml". Which will look like this:
+
+```
+behaviors:
+  Jumper:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 128
+      buffer_size: 2048
+      learning_rate: 0.0003
+      beta: 0.005
+      epsilon: 0.2
+      lambd: 0.9
+      num_epoch: 5
+      learning_rate_schedule: linear
+      beta_schedule: constant
+      epsilon_schedule: linear
+    network_settings:
+      normalize: false
+      hidden_units: 128
+      num_layers: 2
+    reward_signals:
+      extrinsic:
+        gamma: 0.90
+        strength: 1.0
+    max_steps: 15000000
+    time_horizon: 64
+    summary_freq: 50000
+
+```
+
+Now to train the Agent we have to run the following command:
+
+```
+mlagents-learn Jumper_config.yaml --run-id=Jumper
+```
+
+To monitor the statistics of the performance you can use Tensorboard.
